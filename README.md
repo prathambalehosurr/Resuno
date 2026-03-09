@@ -1,6 +1,6 @@
 <div align="center">
 
-![Resuno Banner](file:///C:/Users/prath/.gemini/antigravity/brain/efe9904d-3d6f-47b1-b5bd-b32d6af1b735/resuno_banner_1773052584673.png)
+![Resuno Banner](./assets/banner.png)
 
 # 🚀 Resuno
 
