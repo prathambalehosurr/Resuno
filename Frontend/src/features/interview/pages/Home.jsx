@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react"
 import "../style/home.scss"
 import { useInterview } from "../hooks/useInterview"
-import { useAuth } from "@/features/auth/hooks/useAuth";
+import { useAuth } from "@/features/auth/Hooks/useAuth";
 import { useNavigate, Link } from "react-router-dom"
 import { useTheme } from "../../../context/ThemeContext"
 import Loader from "../../../components/Loader"
