@@ -1,45 +1,186 @@
-main{
-    height: 100vh;
-    width: 100%;
+.auth-page {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  font-family: var(--font-stack);
 
+  /* Left Panel - Illustration */
+  &__visual {
+    flex: 1;
+    display: none; /* hidden on small screens */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(circle at center, rgba(43, 238, 173, 0.15) 0%, var(--bg-page) 70%);
+    border-right: 1px solid var(--border-color);
+
+    @media (min-width: 900px) {
+      display: flex;
+    }
+
+    .brand-tagline {
+      z-index: 2;
+      text-align: center;
+      max-width: 400px;
+      
+      h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        line-height: 1.1;
+        margin-bottom: 1rem;
+        
+        span {
+          display: block;
+        }
+      }
+      
+      p {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        line-height: 1.5;
+      }
+    }
+
+    /* Abstract background glow dots */
+    .glow-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      z-index: 1;
+      opacity: 0.5;
+
+      &--1 {
+        width: 400px;
+        height: 400px;
+        background-color: var(--accent-main);
+        top: -100px;
+        left: -100px;
+      }
+
+      &--2 {
+        width: 300px;
+        height: 300px;
+        background-color: var(--intention-color);
+        bottom: -50px;
+        right: -50px;
+        opacity: 0.3;
+      }
+    }
+  }
+
+  /* Right Panel - Form */
+  &__form {
+    flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 2rem;
+    position: relative;
+  }
+}
 
-    .form-container{
-        min-width: 350px;
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 1.25rem;
+  padding: 2.5rem;
+  box-shadow: var(--shadow-md);
+  /* Glassmorphism effect */
+  background: rgba(var(--bg-card), 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
+  &__header {
+    text-align: center;
+    margin-bottom: 2rem;
+
+    .logo {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
     }
+
+    p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-input);
+      color: var(--text-primary);
+      font-family: var(--font-stack);
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.2s;
+
+      &::placeholder {
+        color: rgba(125, 133, 144, 0.5); /* muted placeholder */
+      }
+
+      &:focus {
+        border-color: var(--border-focus);
+        box-shadow: 0 0 0 3px rgba(43, 238, 173, 0.15);
+        background-color: var(--bg-page);
+      }
+
+      &:focus + label {
+        color: var(--border-focus);
+      }
+    }
+  }
+
+  .auth-button {
+    margin-top: 0.5rem;
+    width: 100%;
+  }
+
+  .auth-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--text-muted);
     
-    form{
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
+    a {
+      color: var(--accent-main);
+      text-decoration: none;
+      font-weight: 600;
+      margin-left: 0.5rem;
+      transition: opacity 0.2s;
+
+      &:hover {
+        opacity: 0.8;
+      }
     }
-
-    .input-group{
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-
-        label{
-            font-size: 1.2rem;
-        }
-
-        input{
-            padding-inline: 1rem;
-            padding-block: 0.75rem;
-            border-radius: 0.75rem;
-            border: none;
-            outline: none;
-        }
-    }
-
-    a{
-        color: #3eeb09;
-        text-decoration: none;
-    }
+  }
 }

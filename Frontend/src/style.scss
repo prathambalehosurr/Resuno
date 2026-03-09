@@ -1,20 +1,102 @@
 @use "./styles/button";
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Default dark theme tokens */
+  --bg-page: #0f1117;
+  --bg-card: #161b22;
+  --bg-panel: #1c2230;
+  --bg-input: #1e2535;
+  --bg-header: rgba(15, 17, 23, 0.85);
+  
+  --border-color: #2a3348;
+  --border-focus: #2beead;
+  
+  --text-primary: #e6edf3;
+  --text-muted: #7d8590;
+  
+  --accent-main: #2beead;
+  --accent-alt: #0d9488;
+  
+  --shadow-sm: 0 4px 6px rgba(0,0,0,0.3);
+  --shadow-md: 0 8px 15px rgba(0,0,0,0.4);
+  
+  --border-radius: 8px;
+  --font-stack: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  
+  /* Status Colors */
+  --severity-high: #ff4d4d;
+  --severity-high-bg: rgba(255, 77, 77, 0.1);
+  --severity-medium: #f5a623;
+  --severity-medium-bg: rgba(245, 166, 35, 0.1);
+  --severity-low: #3fb950;
+  --severity-low-bg: rgba(63, 185, 80, 0.1);
+  
+  --intention-color: #a78bfa;
+  --intention-bg: rgba(167, 139, 250, 0.1);
+}
+
+[data-theme="light"] {
+  /* Light theme variations */
+  --bg-page: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-panel: #f1f5f9;
+  --bg-input: #ffffff;
+  --bg-header: rgba(255, 255, 255, 0.85);
+  
+  --border-color: #e2e8f0;
+  --border-focus: #0d9488;
+  
+  --text-primary: #0f172a;
+  --text-muted: #64748b;
+  
+  --accent-main: #0d9488;
+  --accent-alt: #2beead;
+  
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 10px rgba(0,0,0,0.08);
+
+  --severity-high-bg: rgba(255, 77, 77, 0.15);
+  --severity-medium-bg: rgba(245, 166, 35, 0.15);
+  --severity-low-bg: rgba(63, 185, 80, 0.15);
+  --intention-bg: rgba(167, 139, 250, 0.15);
+}
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-html, 
-body,
-#root {
-    width: 100%;
-    background-color: #110f0f;
-    color: whitesmoke;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+html, body, #root {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  font-family: var(--font-stack);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.highlight{
-    color: #55bd3b;
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-page);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+.highlight {
+  background: linear-gradient(135deg, var(--accent-main), var(--accent-alt));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
 }

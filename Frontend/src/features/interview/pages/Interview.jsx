@@ -1,192 +1,298 @@
-import React, { useState, useEffect } from 'react'
-import '../style/interview.scss'
-import { useInterview } from "../hooks/useInterview";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react"
+import { useParams, Link } from "react-router-dom"
+import { useInterview } from "../hooks/useInterview"
+import "../style/interview.scss"
+import { useTheme } from "../../../context/ThemeContext"
+import Loader from "../../../components/Loader"
 
-
-
-const NAV_ITEMS = [
-    { id: 'technical', label: 'Technical Questions', icon: (<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>) },
-    { id: 'behavioral', label: 'Behavioral Questions', icon: (<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>) },
-    { id: 'roadmap', label: 'Road Map', icon: (<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11" /></svg>) },
-]
-
-// ── Sub-components ────────────────────────────────────────────────────────────
-const QuestionCard = ({ item, index }) => {
-    const [ open, setOpen ] = useState(false)
-    return (
-        <div className='q-card'>
-            <div className='q-card__header' onClick={() => setOpen(o => !o)}>
-                <span className='q-card__index'>Q{index + 1}</span>
-                <p className='q-card__question'>{item.question}</p>
-                <span className={`q-card__chevron ${open ? 'q-card__chevron--open' : ''}`}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
-                </span>
-            </div>
-            {open && (
-                <div className='q-card__body'>
-                    <div className='q-card__section'>
-                        <span className='q-card__tag q-card__tag--intention'>Intention</span>
-                        <p>{item.intention}</p>
-                    </div>
-                    <div className='q-card__section'>
-                        <span className='q-card__tag q-card__tag--answer'>Model Answer</span>
-                        <p>{item.answer}</p>
-                    </div>
-                </div>
-            )}
-        </div>
-    )
-}
-
-const RoadMapDay = ({ day }) => (
-    <div className='roadmap-day'>
-        <div className='roadmap-day__header'>
-            <span className='roadmap-day__badge'>Day {day.day}</span>
-            <h3 className='roadmap-day__focus'>{day.focus}</h3>
-        </div>
-        <ul className='roadmap-day__tasks'>
-            {day.tasks.map((task, i) => (
-                <li key={i}>
-                    <span className='roadmap-day__bullet' />
-                    {task}
-                </li>
-            ))}
-        </ul>
-    </div>
-)
-
-// ── Main Component ────────────────────────────────────────────────────────────
 const Interview = () => {
-    const [ activeNav, setActiveNav ] = useState('technical')
-    const { report, getReportById, loading, getResumePdf } = useInterview()
     const { interviewId } = useParams()
+    const { getReportById, report, loading, getResumePdf } = useInterview()
+    const { theme, toggleTheme } = useTheme()
+
+    // UI state
+    const [activeTab, setActiveTab] = useState('overview')
+    const [expandedCards, setExpandedCards] = useState({})
 
     useEffect(() => {
         if (interviewId) {
             getReportById(interviewId)
         }
-    }, [ interviewId ])
-
-
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [interviewId])
 
     if (loading || !report) {
         return (
             <main className='loading-screen'>
-                <h1>Loading your interview plan...</h1>
+                <Loader scale={0.3} />
+                <h1 style={{ marginTop: '2rem' }}>Loading AI Strategy...</h1>
             </main>
         )
     }
 
-    const scoreColor =
-        report.matchScore >= 80 ? 'score--high' :
-            report.matchScore >= 60 ? 'score--mid' : 'score--low'
+    // Toggle for Q&A flashcards
+    const toggleCard = (id) => {
+        setExpandedCards(prev => ({
+            ...prev,
+            [id]: !prev[id]
+        }))
+    }
 
+    // SVG Score Circle Calculation
+    const score = report?.matchScore || 0;
+    const radius = 60;
+    const circumference = 2 * Math.PI * radius;
+    const strokeDashoffset = circumference - (score / 100) * circumference;
 
     return (
-        <div className='interview-page'>
-            <div className='interview-layout'>
-
-                {/* ── Left Nav ── */}
-                <nav className='interview-nav'>
-                    <div className="nav-content">
-                        <p className='interview-nav__label'>Sections</p>
-                        {NAV_ITEMS.map(item => (
-                            <button
-                                key={item.id}
-                                className={`interview-nav__item ${activeNav === item.id ? 'interview-nav__item--active' : ''}`}
-                                onClick={() => setActiveNav(item.id)}
-                            >
-                                <span className='interview-nav__icon'>{item.icon}</span>
-                                {item.label}
-                            </button>
-                        ))}
-                    </div>
-                    <button
-                        onClick={() => { getResumePdf(interviewId) }}
-                        className='button primary-button' >
-                        <svg height={"0.8rem"} style={{ marginRight: "0.8rem" }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10.6144 17.7956 11.492 15.7854C12.2731 13.9966 13.6789 12.5726 15.4325 11.7942L17.8482 10.7219C18.6162 10.381 18.6162 9.26368 17.8482 8.92277L15.5079 7.88394C13.7092 7.08552 12.2782 5.60881 11.5105 3.75894L10.6215 1.61673C10.2916.821765 9.19319.821767 8.8633 1.61673L7.97427 3.75892C7.20657 5.60881 5.77553 7.08552 3.97685 7.88394L1.63658 8.92277C.868537 9.26368.868536 10.381 1.63658 10.7219L4.0523 11.7942C5.80589 12.5726 7.21171 13.9966 7.99275 15.7854L8.8704 17.7956C9.20776 18.5682 10.277 18.5682 10.6144 17.7956ZM19.4014 22.6899 19.6482 22.1242C20.0882 21.1156 20.8807 20.3125 21.8695 19.8732L22.6299 19.5353C23.0412 19.3526 23.0412 18.7549 22.6299 18.5722L21.9121 18.2532C20.8978 17.8026 20.0911 16.9698 19.6586 15.9269L19.4052 15.3156C19.2285 14.8896 18.6395 14.8896 18.4628 15.3156L18.2094 15.9269C17.777 16.9698 16.9703 17.8026 15.956 18.2532L15.2381 18.5722C14.8269 18.7549 14.8269 19.3526 15.2381 19.5353L15.9985 19.8732C16.9874 20.3125 17.7798 21.1156 18.2198 22.1242L18.4667 22.6899C18.6473 23.104 19.2207 23.104 19.4014 22.6899Z"></path></svg>
-                        Download Resume
+        <div className="interview-report-page fade-in">
+            
+            {/* Top Navigation */}
+            <nav className="app-nav">
+                <Link to="/" className="app-nav__logo highlight" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                   <Loader scale={0.12} />
+                   ← Resuno
+                </Link>
+                <div className="app-nav__actions">
+                    <button onClick={toggleTheme} className="app-nav__theme-btn" title="Toggle theme">
+                        {theme === 'dark' ? '☀️' : '🌙'}
                     </button>
-                </nav>
+                </div>
+            </nav>
 
-                <div className='interview-divider' />
+            <header className="report-header">
+                <div className="report-header__titles">
+                    <h1>
+                        <span className="status-dot"></span>
+                        Interview Strategy Report
+                    </h1>
+                    <div className="report-meta">
+                        <span>Role: {report?.title || "Software Engineer"}</span>
+                        <span>Generated: {new Date().toLocaleDateString()}</span>
+                    </div>
+                </div>
+                <div className="report-header__actions">
+                    <button className="button ghost-button" onClick={() => getResumePdf(interviewId)}>⬇ Download Resume</button>
+                    <button className="button primary-button">Share Report</button>
+                </div>
+            </header>
 
-                {/* ── Center Content ── */}
-                <main className='interview-content'>
-                    {activeNav === 'technical' && (
-                        <section>
-                            <div className='content-header'>
-                                <h2>Technical Questions</h2>
-                                <span className='content-header__count'>{report.technicalQuestions.length} questions</span>
-                            </div>
-                            <div className='q-list'>
-                                {report.technicalQuestions.map((q, i) => (
-                                    <QuestionCard key={i} item={q} index={i} />
-                                ))}
-                            </div>
-                        </section>
+            <div className="report-layout">
+                {/* ── LEFT SIDEBAR (Navigation & Inputs) ── */}
+                <aside className="sidebar-left">
+                    <div className="sidebar-section tab-navigation">
+                        <h3>� Sections</h3>
+                        <button className={`tab-btn ${activeTab === 'overview' ? 'active' : ''}`} onClick={() => setActiveTab('overview')}>
+                            Overview & Strengths
+                        </button>
+                        <button className={`tab-btn ${activeTab === 'technical' ? 'active' : ''}`} onClick={() => setActiveTab('technical')}>
+                            Technical Questions
+                        </button>
+                        <button className={`tab-btn ${activeTab === 'behavioral' ? 'active' : ''}`} onClick={() => setActiveTab('behavioral')}>
+                            Behavioral Questions
+                        </button>
+                        <button className={`tab-btn ${activeTab === 'roadmap' ? 'active' : ''}`} onClick={() => setActiveTab('roadmap')}>
+                            Preparation Roadmap
+                        </button>
+                    </div>
+
+                    <div className="sidebar-section">
+                        <h3>�💼 Target Job Description</h3>
+                        <div className="content-box">
+                            {report?.jobDescription || "Job description was not provided or logged."}
+                        </div>
+                    </div>
+                    <div className="sidebar-section">
+                        <h3>👤 Your Profile</h3>
+                        <div className="content-box">
+                            {report?.resumeText || "Resume data was not provided or logged."}
+                        </div>
+                    </div>
+                </aside>
+
+                {/* ── MAIN CONTENT (Dynamic based on tabs) ── */}
+                <main className="main-content">
+                    
+                    {activeTab === 'overview' && (
+                        <div className="tab-pane slide-up">
+                            {/* Key Strengths */}
+                            <section className="content-section">
+                                <div className="content-section__header">
+                                    <div className="icon-wrapper icon-wrapper--green">⭐</div>
+                                    <h2>Key Strengths to Highlight</h2>
+                                </div>
+                                <ul className="feature-list">
+                                    {report?.keyStrengths?.length > 0 ? report.keyStrengths.map((strength, i) => (
+                                        <li key={i}>{strength}</li>
+                                    )) : <li>No specific strengths identified. Highlight your eagerness to learn!</li>}
+                                </ul>
+                            </section>
+
+                            {/* Missing Skills */}
+                            <section className="content-section" style={{ marginTop: '2rem' }}>
+                                <div className="content-section__header">
+                                    <div className="icon-wrapper icon-wrapper--yellow">⚠️</div>
+                                    <h2>Skill Gaps & How to Address Them</h2>
+                                </div>
+                                <ul className="missing-skills-list">
+                                    {report?.skillGaps?.length > 0 ? report.skillGaps.map((gap, i) => (
+                                        <li key={i}>{gap.skill} <span className="severity-badge">{gap.severity}</span></li>
+                                    )) : <li>You are a solid match with no major skill gaps detected!</li>}
+                                </ul>
+                                <div className="gap-advice">
+                                     <strong>Tip:</strong> If asked about these gaps, emphasize your fast learning speed and any related alternative tools you know.
+                                </div>
+                            </section>
+                        </div>
                     )}
 
-                    {activeNav === 'behavioral' && (
-                        <section>
-                            <div className='content-header'>
-                                <h2>Behavioral Questions</h2>
-                                <span className='content-header__count'>{report.behavioralQuestions.length} questions</span>
-                            </div>
-                            <div className='q-list'>
-                                {report.behavioralQuestions.map((q, i) => (
-                                    <QuestionCard key={i} item={q} index={i} />
-                                ))}
-                            </div>
-                        </section>
+                    {activeTab === 'roadmap' && (
+                        <div className="tab-pane slide-up">
+                            {/* Preparation Roadmap */}
+                            <section className="content-section">
+                                <div className="content-section__header">
+                                    <div className="icon-wrapper icon-wrapper--yellow">📅</div>
+                                    <h2>7-Day Preparation Roadmap</h2>
+                                </div>
+                                <div className="roadmap-list">
+                                    {report?.preparationPlan?.length > 0 ? report.preparationPlan.map((item, i) => (
+                                        <div key={i} className="roadmap-day">
+                                            <div className="roadmap-day__header">
+                                                <span className="roadmap-day__badge">Day {item.day}</span>
+                                                <h3 className="roadmap-day__focus">{item.focus}</h3>
+                                            </div>
+                                            <ul className="roadmap-day__tasks">
+                                                {item.tasks?.map((task, j) => (
+                                                    <li key={j}>
+                                                        <span className="roadmap-day__bullet"></span>
+                                                        {task}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )) : <p>No preparation plan identified. Focus on your foundational skills!</p>}
+                                </div>
+                            </section>
+                        </div>
                     )}
 
-                    {activeNav === 'roadmap' && (
-                        <section>
-                            <div className='content-header'>
-                                <h2>Preparation Road Map</h2>
-                                <span className='content-header__count'>{report.preparationPlan.length}-day plan</span>
-                            </div>
-                            <div className='roadmap-list'>
-                                {report.preparationPlan.map((day) => (
-                                    <RoadMapDay key={day.day} day={day} />
-                                ))}
-                            </div>
-                        </section>
+                    {activeTab === 'technical' && (
+                        <div className="tab-pane slide-up">
+                            <section className="content-section">
+                                <div className="content-section__header">
+                                    <div className="icon-wrapper icon-wrapper--purple">❓</div>
+                                    <h2>Technical Questions Flashcards</h2>
+                                </div>
+                                <p className="instruction-text">Click a card to reveal the intention and suggested answer.</p>
+                                <div className="card-grid">
+                                    {report?.technicalQuestions?.length > 0 ? report.technicalQuestions.map((q, i) => {
+                                        const id = `tech-${i}`
+                                        const isExpanded = expandedCards[id]
+                                        return (
+                                            <div key={i} className={`qa-card interactive-card ${isExpanded ? 'expanded' : ''}`} onClick={() => toggleCard(id)}>
+                                                <div className="qa-card__question">
+                                                    <h4><span className="q-mark">Q:</span> {q.question}</h4>
+                                                    <span className="expand-hint">{isExpanded ? 'Hide Answer' : 'Reveal Answer'}</span>
+                                                </div>
+                                                {isExpanded && (
+                                                    <div className="qa-card__answer fade-in">
+                                                        <p><strong>Interviewer's Intention:</strong> {q.intention || q.answer}</p>
+                                                        <div className="key-points">
+                                                            <strong>Suggested Answer:</strong>
+                                                            <ul>
+                                                                <li>{q.answer || q.suggestedAnswer || "Be honest and use the STAR method."}</li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )
+                                    }) : <p>No technical questions found based on the provided profile.</p>}
+                                </div>
+                            </section>
+                        </div>
                     )}
+
+                    {activeTab === 'behavioral' && (
+                        <div className="tab-pane slide-up">
+                            <section className="content-section">
+                                <div className="content-section__header">
+                                    <div className="icon-wrapper icon-wrapper--blue">💬</div>
+                                    <h2>Behavioral Questions Flashcards</h2>
+                                </div>
+                                <p className="instruction-text">Click a card to reveal the intention and suggested answer.</p>
+                                <div className="card-grid">
+                                    {report?.behavioralQuestions?.length > 0 ? report.behavioralQuestions.map((q, i) => {
+                                        const id = `behav-${i}`
+                                        const isExpanded = expandedCards[id]
+                                        return (
+                                            <div key={i} className={`qa-card interactive-card ${isExpanded ? 'expanded' : ''}`} onClick={() => toggleCard(id)}>
+                                                <div className="qa-card__question">
+                                                    <h4><span className="q-mark">Q:</span> {q.question}</h4>
+                                                    <span className="expand-hint">{isExpanded ? 'Hide Answer' : 'Reveal Answer'}</span>
+                                                </div>
+                                                {isExpanded && (
+                                                    <div className="qa-card__answer fade-in">
+                                                        <p><strong>Interviewer's Intention:</strong> {q.intention || q.answer}</p>
+                                                        <div className="key-points">
+                                                            <strong>Suggested Answer:</strong>
+                                                            <ul>
+                                                              <li>{q.answer || q.suggestedAnswer || "Focus on your soft skills."}</li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )
+                                    }) : <p>No behavioral questions found based on the provided profile.</p>}
+                                </div>
+                            </section>
+                        </div>
+                    )}
+
                 </main>
 
-                <div className='interview-divider' />
-
-                {/* ── Right Sidebar ── */}
-                <aside className='interview-sidebar'>
-
-                    {/* Match Score */}
-                    <div className='match-score'>
-                        <p className='match-score__label'>Match Score</p>
-                        <div className={`match-score__ring ${scoreColor}`}>
-                            <span className='match-score__value'>{report.matchScore}</span>
-                            <span className='match-score__pct'>%</span>
+                {/* ── RIGHT SIDEBAR (Score & Metrics) ── */}
+                <aside className="sidebar-right">
+                    <div className="score-widget">
+                        <h3>Overall Match</h3>
+                        <div className="score-widget__circle">
+                            <svg width="140" height="140">
+                                <circle className="bg" cx="70" cy="70" r={radius} />
+                                <circle 
+                                    className="progress" 
+                                    cx="70" 
+                                    cy="70" 
+                                    r={radius} 
+                                    strokeDasharray={circumference}
+                                    strokeDashoffset={strokeDashoffset}
+                                />
+                            </svg>
+                            <div className="score-value">
+                                <span>{score}%</span>
+                                <small>Score</small>
+                            </div>
                         </div>
-                        <p className='match-score__sub'>Strong match for this role</p>
+                        <p>Your profile is a strong match. Focus on addressing your skill gaps during the interview.</p>
                     </div>
 
-                    <div className='sidebar-divider' />
-
-                    {/* Skill Gaps */}
-                    <div className='skill-gaps'>
-                        <p className='skill-gaps__label'>Skill Gaps</p>
-                        <div className='skill-gaps__list'>
-                            {report.skillGaps.map((gap, i) => (
-                                <span key={i} className={`skill-tag skill-tag--${gap.severity}`}>
-                                    {gap.skill}
-                                </span>
-                            ))}
+                    <div className="metrics-section">
+                        <h3>Quick Metrics</h3>
+                        <div className="metric-item">
+                            <span className="label">Tech Questions Ready</span>
+                            <span className="value">{report?.technicalQuestions?.length || 0}</span>
+                        </div>
+                        <div className="metric-item">
+                            <span className="label">Behavioral Ready</span>
+                            <span className="value">{report?.behavioralQuestions?.length || 0}</span>
+                        </div>
+                        <div className="metric-item">
+                            <span className="label">Gaps to Cover</span>
+                            <span className="value">{report?.skillGaps?.length || 0}</span>
                         </div>
                     </div>
-
                 </aside>
+
             </div>
         </div>
     )
