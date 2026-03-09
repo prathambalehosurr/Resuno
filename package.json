@@ -1,0 +1,14 @@
+{
+  "name": "resuno",
+  "private": true,
+  "workspaces": [
+    "Frontend",
+    "Backend"
+  ],
+  "scripts": {
+    "build": "npm --prefix Frontend run build"
+  },
+  "engines": {
+    "node": "22.x"
+  }
+}
