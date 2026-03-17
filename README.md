@@ -67,7 +67,7 @@
    ```bash
    cd Backend
    npm install
-   # Create a .env file with your GOOGLE_GENAI_API_KEY and MONGO_URI
+   cp ../.env.example .env   # fill in GOOGLE_GENAI_API_KEY, MONGO_URI, JWT_SECRET, FRONTEND_URL
    npm run dev
    ```
 
@@ -75,8 +75,40 @@
    ```bash
    cd ../Frontend
    npm install
+   cp .env.example .env.local   # set VITE_API_URL=http://localhost:3000
    npm run dev
    ```
+
+---
+
+## ☁️ Deployment
+
+Resuno is split into two independently deployed services.
+
+### Backend — Railway / Render
+
+1. Create a new service pointing to the `Backend` directory (or use the root and set the start command to `npm start`).
+2. Set the following environment variables in your hosting dashboard:
+   ```
+   GOOGLE_GENAI_API_KEY=<your key>
+   MONGO_URI=<mongodb+srv://...>
+   JWT_SECRET=<random secret>
+   FRONTEND_URL=<https://your-frontend-domain.vercel.app>
+   COOKIE_SAME_SITE=none
+   COOKIE_SECURE=true
+   PORT=3000
+   ```
+3. The start command is `npm start` (runs `node server.js`).
+
+### Frontend — Vercel
+
+1. Import the repository into Vercel.
+2. Set the **Root Directory** to `Frontend` (or use the root-level `vercel.json` which already points to `Frontend/dist`).
+3. Add the environment variable:
+   ```
+   VITE_API_URL=<https://your-backend-domain.up.railway.app>
+   ```
+4. Deploy — Vercel will run `npm run build` and serve the output from `Frontend/dist`.
 
 ---
 
