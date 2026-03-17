@@ -6,7 +6,8 @@
     "Backend"
   ],
   "scripts": {
-    "build": "npm --prefix Frontend run build"
+    "build": "npm --prefix Frontend run build",
+    "start": "npm --prefix Backend run start"
   },
   "engines": {
     "node": "22.x"
