@@ -176,7 +176,7 @@ Rules:
 `;
 
     const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
+        model: "gemini-1.5-flash",
         contents: prompt,
         config: {
             responseMimeType: "application/json",
@@ -198,7 +198,9 @@ Rules:
 
 async function generatePdfContent(htmlcontent) {
 
-    const browser = await puppeteer.launch()
+    const browser = await puppeteer.launch({
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+    })
     const page = await browser.newPage()
     await page.setContent(htmlcontent, { waitUntil: "networkidle0" })
 
@@ -240,7 +242,7 @@ async function generateResumePdf({ resume, selfDescription, jobDescription }) {
                     `
 
     const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
+        model: "gemini-1.5-flash",
         contents: prompt,
         config: {
             responseMimeType: "application/json",
