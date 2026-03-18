@@ -4,6 +4,8 @@ const cors = require("cors");
 
 const app = express();
 
+app.set('trust proxy', 1); // Trust Render's proxy for Secure cookies
+
 const configuredOrigins = new Set(
     (process.env.FRONTEND_URL || "")
         .split(",")
