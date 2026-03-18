@@ -4,6 +4,8 @@ import { useInterview } from "../hooks/useInterview"
 import "../style/interview.scss"
 import { useTheme } from "../../../context/ThemeContext"
 import Loader from "../../../components/Loader"
+import GeneratingLoader from "../../../components/GeneratingLoader"
+import Logo from "../../../assets/logo.png"
 
 const Interview = () => {
     const { interviewId } = useParams()
@@ -24,8 +26,7 @@ const Interview = () => {
     if (loading || !report) {
         return (
             <main className='loading-screen'>
-                <Loader scale={0.3} />
-                <h1 style={{ marginTop: '2rem' }}>Loading AI Strategy...</h1>
+                <GeneratingLoader />
             </main>
         )
     }
@@ -50,7 +51,7 @@ const Interview = () => {
             {/* Top Navigation */}
             <nav className="app-nav">
                 <Link to="/" className="app-nav__logo highlight" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                   <Loader scale={0.12} />
+                   <img src={Logo} alt="Resuno Logo" style={{ height: '30px' }} />
                    ← Resuno
                 </Link>
                 <div className="app-nav__actions">

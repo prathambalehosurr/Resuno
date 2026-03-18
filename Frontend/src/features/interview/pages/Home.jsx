@@ -4,7 +4,8 @@ import { useInterview } from "../hooks/useInterview"
 import { useAuth } from "@/features/auth/Hooks/useAuth";
 import { useNavigate, Link } from "react-router-dom"
 import { useTheme } from "../../../context/ThemeContext"
-import Loader from "../../../components/Loader"
+import GeneratingLoader from "../../../components/GeneratingLoader"
+import Logo from "../../../assets/logo.png"
 
 const Home = () => {
     const { loading: interviewLoading, generateReport, reports } = useInterview()
@@ -25,8 +26,7 @@ const Home = () => {
     if (interviewLoading) {
         return (
             <main className='loading-screen'>
-                <Loader scale={0.3} />
-                <h1 style={{ marginTop: '2rem' }}>Generating Interview Strategy...</h1>
+                <GeneratingLoader />
             </main>
         )
     }
@@ -36,7 +36,7 @@ const Home = () => {
             {/* Top Navigation */}
             <nav className="app-nav">
                 <Link to="/" className="app-nav__logo highlight" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <Loader scale={0.12} /> 
+                    <img src={Logo} alt="Resuno Logo" style={{ height: '30px' }} />
                     Resuno
                 </Link>
                 <div className="app-nav__actions">
