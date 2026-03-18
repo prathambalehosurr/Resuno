@@ -109,8 +109,8 @@ async function generateInterviewReport({
     selfDescription,
     jobDescription
 }) {
-
-    const prompt = `
+    try {
+        const prompt = `
 You are an expert technical interviewer.
 
 Candidate Resume:
@@ -175,23 +175,33 @@ Rules:
 - Return ONLY JSON, no markdown, no explanation
 `;
 
-    const response = await ai.models.generateContent({
-        model: "gemini-1.5-flash",
-        contents: prompt,
-        config: {
-            responseMimeType: "application/json",
+        console.log("Starting AI Content Generation with model gemini-1.5-flash...");
+        
+        const response = await ai.models.generateContent({
+            model: "gemini-1.5-flash",
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+            }
+        })
+
+        if (!response || !response.text) {
+            console.error("AI Response object is empty or missing text property:", response);
+            throw new Error("Empty response from AI service");
         }
-    })
 
-    const rawText = response.text
-        .replace(/```json/g, "")
-        .replace(/```/g, "")
-        .trim()
+        const rawText = response.text
+            .replace(/```json/g, "")
+            .replace(/```/g, "")
+            .trim()
 
-    return JSON.parse(rawText)
+        console.log("AI Generation Successful. Parsing JSON...");
+        return JSON.parse(rawText)
 
-
-
+    } catch (error) {
+        console.error("CRITICAL ERROR in generateInterviewReport:", error);
+        throw error;
+    }
 }
 
 
