@@ -1,20 +1,16 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const GeneratingLoader = () => {
+const GeneratingLoader = ({ text = "Generating" }) => {
+  const letters = text.split("");
   return (
     <StyledWrapper>
       <div className="loader-wrapper">
-        <span className="loader-letter">G</span>
-        <span className="loader-letter">e</span>
-        <span className="loader-letter">n</span>
-        <span className="loader-letter">e</span>
-        <span className="loader-letter">r</span>
-        <span className="loader-letter">a</span>
-        <span className="loader-letter">t</span>
-        <span className="loader-letter">i</span>
-        <span className="loader-letter">n</span>
-        <span className="loader-letter">g</span>
+        {letters.map((letter, index) => (
+          <span key={index} className="loader-letter" style={{ animationDelay: `${index * 0.1 + 0.1}s` }}>
+            {letter === " " ? "\u00A0" : letter}
+          </span>
+        ))}
         <div className="loader" />
       </div>
     </StyledWrapper>
@@ -112,37 +108,6 @@ const StyledWrapper = styled.div`
     z-index: 2;
   }
 
-  .loader-letter:nth-child(1) {
-    animation-delay: 0.1s;
-  }
-  .loader-letter:nth-child(2) {
-    animation-delay: 0.205s;
-  }
-  .loader-letter:nth-child(3) {
-    animation-delay: 0.31s;
-  }
-  .loader-letter:nth-child(4) {
-    animation-delay: 0.415s;
-  }
-  .loader-letter:nth-child(5) {
-    animation-delay: 0.521s;
-  }
-  .loader-letter:nth-child(6) {
-    animation-delay: 0.626s;
-  }
-  .loader-letter:nth-child(7) {
-    animation-delay: 0.731s;
-  }
-  .loader-letter:nth-child(8) {
-    animation-delay: 0.837s;
-  }
-  .loader-letter:nth-child(9) {
-    animation-delay: 0.942s;
-  }
-  .loader-letter:nth-child(10) {
-    animation-delay: 1.047s;
-  }
-
   @keyframes loader-letter-anim {
     0% {
       opacity: 0;
@@ -158,6 +123,7 @@ const StyledWrapper = styled.div`
     100% {
       opacity: 0;
     }
-  }`;
+  }
+`;
 
 export default GeneratingLoader;

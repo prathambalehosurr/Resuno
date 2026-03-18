@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../auth.form.scss";
 import { useAuth } from "@/features/auth/Hooks/useAuth";
+import Logo from "../../../assets/logo.png"
+import GeneratingLoader from "../../../components/GeneratingLoader"
 
 
 const Login = () => {
@@ -20,7 +22,11 @@ const Login = () => {
     }
 
     if(loading){
-        return (<main className="auth-page" style={{ justifyContent: 'center', alignItems: 'center' }}><h1>Loading.......</h1></main>)
+        return (
+            <main className="auth-page" style={{ justifyContent: 'center', alignItems: 'center' }}>
+                <GeneratingLoader text="Authenticating" />
+            </main>
+        )
     }
 
     return (
@@ -40,7 +46,9 @@ const Login = () => {
             <div className="auth-page__form">
                 <div className="auth-card">
                     <div className="auth-card__header">
-                        <div className="logo highlight">Resuno</div>
+                        <div className="logo highlight">
+                            <img src={Logo} alt="Resuno Logo" style={{ height: '40px' }} />
+                        </div>
                         <p>Welcome back! Please enter your details.</p>
                     </div>
 
