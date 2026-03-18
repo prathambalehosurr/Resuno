@@ -5,8 +5,8 @@ const tokenBlacklistModel = require("../models/blacklist.model")
 
 const authCookieOptions = {
     httpOnly: true,
-    secure: process.env.COOKIE_SECURE === "true",
-    sameSite: process.env.COOKIE_SAME_SITE || "lax",
+    secure: true, // Always true for cross-domain cookies on Render/Vercel
+    sameSite: "none", // Required for cross-domain cookies
     path: "/"
 }
 
