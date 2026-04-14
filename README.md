@@ -91,14 +91,6 @@
 
 ---
 
-## 📸 Screenshots
-
-| Dashboard | Interview Report |
-| :---: | :---: |
-| ![Dashboard Placeholder](https://via.placeholder.com/400x250?text=Dashboard) | ![Report Placeholder](https://via.placeholder.com/400x250?text=Report) |
-
----
-
 ## 🤝 Contributing
 Contributions are welcome! Please feel free to submit a Pull Request.
 
